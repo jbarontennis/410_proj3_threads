@@ -13,91 +13,67 @@
 #include "../header files/tester.h"
 #include "../header files/print_ts.h"
 using namespace std;
-std::string st;
-int numThread;
-WHICH_PRINT w;
-int timesToPrint;
-int delay;
+
 std::mutex mtx;
 std::vector<std::thread> threads;
+bool cancel;
+void threadHandler(int numThreads, int numPrints, int mili, WHICH_PRINT w,
+		string m) {
+	for (int j = 0; j < numPrints; j++) {
+		if(cancel){
+			break;
+		}
+		else if (w == P1) {
+			PRINT1(m);
+		} else if (w == P2) {
+			PRINT2(m, m);
+		} else if (w == P3) {
+			PRINT3(m, m, m);
+		} else if (w == P4) {
+			PRINT4(m, m, m, m);
+		} else {
+			PRINT5(m, m, m, m, m);
+		}
+		this_thread::sleep_for(chrono::milliseconds(mili));
+	}
+}
 void startThreads(std::string s, int numThreads, WHICH_PRINT wp,
 		int numTimesToPrint, int millisecond_delay) {
-
-	st = s;
-	w = wp;
-	timesToPrint = numTimesToPrint;
-	delay = millisecond_delay;
+	setCancelThreads(false);
 	for (int i = 0; i < numThreads; i++) {
-		if (wp == P1) {
-			threads.push_back(std::thread(PRINT1, std::ref(s)));
-			this_thread::sleep_for(chrono::milliseconds(delay));
-			for (int j = 1; j < numTimesToPrint; j++) {
-				PRINT1(s);
-				this_thread::sleep_for(chrono::milliseconds(delay));
-			}
-		} else if (wp == P2) {
-			threads.push_back(std::thread(PRINT2, std::ref(s), std::ref(s)));
-			this_thread::sleep_for(chrono::milliseconds(delay));
-			for (int j = 1; j < numTimesToPrint; j++) {
-				PRINT2(s, s);
-				this_thread::sleep_for(chrono::milliseconds(delay));
-			}
-		} else if (wp == P3) {
-			threads.push_back(
-					std::thread(PRINT3, std::ref(s), std::ref(s), std::ref(s)));
-			this_thread::sleep_for(chrono::milliseconds(delay));
-			for (int j = 1; j < numTimesToPrint; j++) {
-				PRINT3(s, s, s);
-				this_thread::sleep_for(chrono::milliseconds(delay));
-			}
-		} else if (wp == P4) {
-			threads.push_back(
-					std::thread(PRINT4, std::ref(s), std::ref(s), std::ref(s),
-							std::ref(s)));
-			this_thread::sleep_for(chrono::milliseconds(delay));
-			for (int j = 1; j < numTimesToPrint; j++) {
-				PRINT4(s, s, s, s);
-				this_thread::sleep_for(chrono::milliseconds(delay));
-			}
-		} else {
-			threads.push_back(
-					std::thread(PRINT5, std::ref(s), std::ref(s), std::ref(s),
-							std::ref(s), std::ref(s)));
-			this_thread::sleep_for(chrono::milliseconds(delay));
-			for (int j = 1; j < numTimesToPrint; j++) {
-				PRINT5(s, s, s, s, s);
-				this_thread::sleep_for(chrono::milliseconds(delay));
-			}
-		}
-
+		threads.push_back(
+				std::thread(threadHandler, numThreads, numTimesToPrint,
+						millisecond_delay, wp, s));
 	}
 
-	threads.clear();
-		}
+}
 
 void setCancelThreads(bool bCancel) {
 	std::mutex tmp;
-if(bCancel){
-	for(auto& t : threads){
-		tmp.lock();
-		std::cout<<USER_CHOSE_TO_CANCEL<<std::endl;
-		tmp.unlock();
-	}
-}
-}
-void joinThreads() {
-	for(auto& t : threads){
-			t.join();
+	cancel = bCancel;
+	if (bCancel) {
+		for (auto &t : threads) {
+			tmp.lock();
+			std::cout << USER_CHOSE_TO_CANCEL << std::endl;
+			std::cout<<"Thread:"<<t.get_id()<<" exiting"<<std::endl;
+			tmp.unlock();
 		}
 
+	}
+}
+void joinThreads() {
+	for (auto &t : threads) {
+		t.join();
+	}
+threads.clear();
 }
 //string,numThreads,wp,timestoprint,delay
 int main() {
-	startThreads("tx", 10, P4, 1, 1000);
-	setCancelThreads(false);
-	startThreads("js", 10, P5, 2, 1000);
-	std::string tm1 = "pop";
-	std::string tm2 = "horn";
-	PRINT3(tm1,tm2,tm1);
+	startThreads("tx", 10, P4, 6, 100);
+	//joinThreads();
+	/*startThreads("js", 10, P5, 1, 1000);*/
+	setCancelThreads(true);
+	 joinThreads();
+
 }
 
