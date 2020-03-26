@@ -53,10 +53,8 @@ void setCancelThreads(bool bCancel) {
 	cancel = bCancel;
 	if (bCancel) {
 		for (auto &t : threads) {
-			tmp.lock();
-			std::cout << USER_CHOSE_TO_CANCEL << std::endl;
-			std::cout<<"Thread:"<<t.get_id()<<" exiting"<<std::endl;
-			tmp.unlock();
+			lock_guard<mutex> lock(tmp);
+			printf("%s\n", USER_CHOSE_TO_CANCEL.c_str());
 		}
 
 	}
