@@ -54,6 +54,7 @@ void setCancelThreads(bool bCancel) {
 	if (bCancel) {
 		for (auto &t : threads) {
 			lock_guard<mutex> lock(tmp);
+			this_thread::sleep_for(chrono::milliseconds(100));
 			printf("%s\n", USER_CHOSE_TO_CANCEL.c_str());
 		}
 
@@ -67,10 +68,10 @@ threads.clear();
 }
 //string,numThreads,wp,timestoprint,delay
 int main() {
-	startThreads("tx", 10, P4, 6, 100);
+	startThreads("tx", 15, P4, 2, 0);
 	//joinThreads();
 	/*startThreads("js", 10, P5, 1, 1000);*/
-	setCancelThreads(true);
+	setCancelThreads(false);
 	 joinThreads();
 
 }

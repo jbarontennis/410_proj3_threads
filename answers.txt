@@ -1,0 +1,10 @@
+1. around 8 threads because I 
+have a 4 core system and it can 
+efficiently run 2 threads per 
+core.
+ 
+2. with a 4 core system it can 
+effienciently run 8 threads. 
+If it were to have more than 8 
+threads than it would not run in 
+parallel.
