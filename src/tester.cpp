@@ -66,13 +66,5 @@ void joinThreads() {
 	}
 threads.clear();
 }
-//string,numThreads,wp,timestoprint,delay
-int main() {
-	startThreads("tx", 15, P4, 2, 0);
-	//joinThreads();
-	/*startThreads("js", 10, P5, 1, 1000);*/
-	setCancelThreads(false);
-	 joinThreads();
 
-}
 

@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/main.cpp \
 ../src/print_ts.cpp \
 ../src/tester.cpp 
 
 OBJS += \
+./src/main.o \
 ./src/print_ts.o \
 ./src/tester.o 
 
 CPP_DEPS += \
+./src/main.d \
 ./src/print_ts.d \
 ./src/tester.d 
 
